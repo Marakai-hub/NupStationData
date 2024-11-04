@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisoro NUP Polling Station Agents</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color: #b71c1c;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body class="p-2">
+    <div class="header">
+        <h1 style="font-family: 'Times New Roman', Times, serif;">NUP KISORO POLING STATION AGENTS 2024</h1>
+    </div>
+
+    <div class="my-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                <form method="GET" action="{% url 'agent_list' %}" class="input-group mb-3">
+                    <input type="text" name="search" class="form-control" placeholder="Search by ID, Name, or Phone" value="{{ query }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-danger" type="submit">Search</button>
+                    </div>
+                </form>
+
+                {% for county, subcounties in organized_agents.items %}
+                    <h3 style="text-align: center; font-family: 'Times New Roman', Times, serif;">{{ county }}</h3>
+                    {% for subcounty, parishes in subcounties.items %}
+                        <h4 style="color: #b71c1c; text-align: center; font-family: 'Times New Roman', Times, serif;">{{ subcounty }} SUB COUNTY,</h4>
+                        {% for parish, agents in parishes.items %}
+                            <h5 style="color: rgb(5, 7, 97); font-family: 'Times New Roman', Times, serif;">{{ parish }} PARISH</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Phone Number</th>
+                                            <th>Polling Station</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for agent in agents %}
+                                            <tr>
+                                                <td>{{ agent.name }}</td>
+                                                <td><a href="tel:{{ agent.phone_number }}">{{ agent.phone_number }}</a></td>
+                                                <td>
+                                                    {% for station in agent.village.pollingstation_set.all %}
+                                                        {{ station.name }}{% if not forloop.last %}, {% endif %}
+                                                    {% empty %}
+                                                        No polling station
+                                                    {% endfor %}
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center italic text-muted">
+                                                    No agents found in this parish.
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Kisoro NUP Polling Stations. All rights reserved.</p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
